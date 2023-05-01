@@ -92,11 +92,12 @@ public class DatabaseDriver {
 		ResultSet resultSet = null;
 		Connection connection = null;
 		String log = null;
+		String query = "SELECT * FROM  dhis2_log WHERE report_name = ? AND report_month = ? AND report_year = ? ORDER BY submitted_date DESC LIMIT 1"; 
 		try {
 			connection = DriverManager.getConnection(properties.openmrsDBUrl);
-			PreparedStatement ps = connection.prepareStatement(
 
-					"SELECT * FROM  dhis2_log WHERE report_name = ? AND report_month = ? AND report_year = ? ORDER BY submitted_date DESC LIMIT 1");
+			PreparedStatement ps = connection.prepareStatement(query);
+
 			ps.setString(1, programName);
 			ps.setInt(2, month);
 			ps.setInt(3, year);
@@ -109,9 +110,9 @@ public class DatabaseDriver {
 			}
 			log = jsonObject.toString(INDENT_FACTOR);
 		} catch (SQLException e) {
-			throw new DHISIntegratorException(String.format(Messages.SQL_EXECUTION_EXCEPTION), e);
+			throw new DHISIntegratorException(String.format(Messages.SQL_EXECUTION_EXCEPTION, query), e);
 		} catch (JSONException e) {
-			throw new DHISIntegratorException(String.format(Messages.SQL_EXECUTION_EXCEPTION), e);
+			throw new DHISIntegratorException(String.format(Messages.SQL_EXECUTION_EXCEPTION, query), e);
 		} finally {
 			if (connection != null) {
 				try {
